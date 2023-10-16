@@ -1,0 +1,81 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Parser {
+    private List<String> tokens;
+    private int currentPosition;
+
+    public Parser(List<String> tokens) {
+        this.tokens = tokens;
+        this.currentPosition = 0;
+    }
+
+    public void parse() {
+        try {
+            program();
+            System.out.println("Parsing successful!");
+        } catch (ParseException e) {
+            System.out.println("Parsing error: " + e.getMessage());
+        }
+    }
+
+    private void program() throws ParseException {
+        // Implement parsing logic for the program rule
+        statement();
+        while (currentPosition < tokens.size()) {
+            match(";");
+            statement();
+        }
+    }
+
+    private void statement() throws ParseException {
+        // Implement parsing logic for the statement rule
+        if (accept("print")) {
+            expr();
+        } else {
+            throw new ParseException("Invalid statement");
+        }
+    }
+
+    private void expr() throws ParseException {
+        // Implement parsing logic for the expr rule
+        if (accept("<identifier>")) {
+            return;
+        }
+
+        if (accept("<string>")) {
+            return;
+        }
+
+        throw new ParseException("Invalid expression");
+    }
+
+    private boolean accept(String token) {
+        if (currentPosition < tokens.size() && tokens.get(currentPosition).equals(token)) {
+            currentPosition++;
+            return true;
+        }
+        return false;
+    }
+
+    private void match(String token) throws ParseException {
+        if (!accept(token)) {
+            throw new ParseException("Expected token: " + token);
+        }
+    }
+
+    public static void main(String[] args) {
+        List<String> tokens = new ArrayList<>();
+        tokens.add("print");
+        tokens.add("<string>");
+        tokens.add(";");
+        Parser parser = new Parser(tokens);
+        parser.parse();
+    }
+}
+
+class ParseException extends Exception {
+    public ParseException(String message) {
+        super(message);
+    }
+}
